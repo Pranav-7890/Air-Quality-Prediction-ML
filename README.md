@@ -1,4 +1,4 @@
-# 🌫️ Air Quality Forecasting System – Ahmedabad
+# 🌫️ Air Quality Forecasting System
 
 ![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
 ![Prophet](https://img.shields.io/badge/Model-Prophet-orange.svg)
