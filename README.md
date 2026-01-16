@@ -6,126 +6,78 @@
 
 A comprehensive machine learning project designed to predict air quality levels based on atmospheric variables. This repository provides a complete pipeline from data preprocessing and exploratory data analysis (EDA) to model training and performance evaluation.
 
-## 📌 Project Overview
 
-Air pollution is a significant environmental risk to health. This project leverages historical meteorological data (such as temperature, humidity, and wind speed) and pollutant levels to build a predictive model that estimates the Air Quality Index (AQI). By accurately predicting AQI, urban planners and citizens can make informed decisions to mitigate health risks.
+## 📊 Overview
 
-## 🚀 Features
+This project focuses on predicting air quality levels by processing a dataset of 23,500+ records. It transitions from raw data ingestion and preprocessing to advanced time-series forecasting and interactive data visualization.
 
-- **Data Preprocessing:** Handles missing values, outliers, and feature scaling.
-- **Exploratory Data Analysis (EDA):** Visualizes correlations between pollutants and environmental factors.
-- **Regression Modeling:** Implementation of various algorithms (Linear Regression, Decision Trees, Random Forest, etc.).
-- **Evaluation Metrics:** Detailed performance reports using R-squared, Mean Absolute Error (MAE), and Root Mean Squared Error (RMSE).
-- **Interactive Notebooks:** Step-by-step walkthrough of the ML lifecycle.
+### Key Features
+*   **Data Preprocessing:** Automated date conversion and handling of sensor readings.
+*   **Feature Engineering:** Implementation of `MinMaxScaler` for normalized model training.
+*   **Time-Series Modeling:** Daily seasonality forecasting using the Prophet algorithm.
+*   **Performance Metrics:** Evaluation using MAE, RMSE, and R-squared scores.
+*   **Interactive Dashboards:** Dynamic visualizations using Plotly for "Actual vs. Predicted" analysis.
 
 ## 🛠 Tech Stack
 
-- **Language:** Python
-- **Data Manipulation:** Pandas, NumPy
-- **Visualization:** Matplotlib, Seaborn
-- **Machine Learning:** Scikit-Learn
-- **Environment:** Jupyter Notebook / Google Colab
+*   **Language:** Python
+*   **Data Analysis:** Pandas, NumPy
+*   **Machine Learning:** Scikit-Learn, Prophet
+*   **Visualization:** Matplotlib, Seaborn, Plotly
 
----
-
-## 💻 Getting Started
-
-Follow these instructions to get a copy of the project up and running on your local machine.
+## 🚀 Getting Started
 
 ### Prerequisites
+Ensure you have Python installed, then install the required dependencies:
 
-Ensure you have Python 3.8 or higher installed. You will also need `pip` for package management.
-
-### Installation
-
-1. **Clone the Repository:**
-   ```bash
-   git clone https://github.com/Pranav-7890/Air-Quality-Prediction-ML.git
-   cd Air-Quality-Prediction-ML
-   ```
-
-2. **Create a Virtual Environment (Recommended):**
-   ```bash
-   # Windows
-   python -m venv venv
-   .\venv\Scripts\activate
-
-   # macOS/Linux
-   python3 -m venv venv
-   source venv/bin/activate
-   ```
-
-3. **Install Dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
-   *Note: If a requirements.txt is not present, install the core stack:*
-   `pip install pandas numpy matplotlib seaborn scikit-learn jupyter`
-
----
-
-## 📖 Step-by-Step Implementation Guide
-
-To replicate this project or use it with your own dataset, follow these steps:
-
-### 1. Data Collection & Loading
-Place your dataset (CSV format) in the project directory. Load the data using Pandas:
-```python
-import pandas as pd
-df = pd.read_csv('your_dataset.csv')
+```bash
+pip install pandas numpy matplotlib seaborn scikit-learn prophet plotly
 ```
 
-### 2. Exploratory Data Analysis (EDA)
-Identify trends and correlations. Check for null values and visualize the distribution of the target variable (AQI):
+### Dataset Structure
+The model expects a CSV file named `air_pollution_data.csv` with the following columns:
+*   `city`, `date`, `aqi` (Target)
+*   `co`, `no`, `no2`, `o3`, `so2`, `pm2_5`, `pm10`, `nh3`
+
+## 📈 Implementation Workflow
+
+### 1. Data Cleaning & Scaling
+The project converts raw date strings into Python datetime objects and scales the target `aqi` variable to a range between 0 and 1 to improve model convergence.
+
 ```python
-import seaborn as sns
-sns.heatmap(df.corr(), annot=True)
+from sklearn.preprocessing import MinMaxScaler
+
+scaler = MinMaxScaler()
+prophet_df['y'] = scaler.fit_transform(prophet_df[['y']])
 ```
 
-### 3. Feature Engineering
-Select the most relevant features (e.g., PM2.5, PM10, Temperature) and split the data into training and testing sets:
-```python
-from sklearn.model_selection import train_test_split
+### 2. Model Training
+The Prophet model is configured to recognize daily seasonality patterns in the air quality data.
 
-X = df.drop('AQI', axis=1)
-y = df['AQI']
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+```python
+from prophet import Prophet
+
+model = Prophet(daily_seasonality=True)
+model.fit(train_df)
 ```
 
-### 4. Model Training
-Initialize and train the machine learning model. For example, using Random Forest:
-```python
-from sklearn.ensemble import RandomForestRegressor
+### 3. Forecasting
+Predictions are generated for a 30-day future horizon, providing upper and lower uncertainty bounds.
 
-model = RandomForestRegressor()
-model.fit(X_train, y_train)
-```
+## 🧪 Evaluation Results
 
-### 5. Prediction and Evaluation
-Validate the model's accuracy on the test set:
-```python
-from sklearn.metrics import r2_score
+The model was evaluated on a 20% hold-out test set with the following results:
 
-predictions = model.predict(X_test)
-print(f"R-Squared Score: {r2_score(y_test, predictions)}")
-```
+| Metric | Value |
+| :--- | :--- |
+| **Mean Absolute Error (MAE)** | 0.3205 |
+| **Root Mean Square Error (RMSE)** | 0.3978 |
+| **R-squared (R2) Score** | -0.2182 |
 
----
+> **Note:** The R2 score suggests that while the model captures general trends, the high volatility in daily air quality data presents significant forecasting challenges.
 
-## 📊 Results & Visualization
-The project includes scripts to generate plots that compare predicted vs. actual AQI values, allowing for a clear visual representation of model performance.
+## 🖼 Visualizations
 
-## 🤝 Contributing
-Contributions are welcome! If you have suggestions for improving the model or adding new features:
-1. Fork the Project.
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`).
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`).
-4. Push to the Branch (`git push origin feature/AmazingFeature`).
-5. Open a Pull Request.
-
-## 📄 License
-Distributed under the MIT License. See `LICENSE` for more information.
-
-## ✉️ Contact
-Pranav - [GitHub Profile](https://github.com/Pranav-7890)
-Project Link: [https://github.com/Pranav-7890/Air-Quality-Prediction-ML](https://github.com/Pranav-7890/Air-Quality-Prediction-ML)
+The project includes two types of visualizations:
+1.  **Static Comparison:** Matplotlib plots showing the overlap of actual vs. predicted AQI.
+2.  **Interactive Dashboard:** A Plotly-based interface allowing users to hover over specific dates to compare forecasted values against ground truth.
